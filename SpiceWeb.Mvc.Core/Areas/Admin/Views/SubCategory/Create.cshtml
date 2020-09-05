@@ -1,0 +1,98 @@
+﻿@model SubCategoryAndCategoryViewModel
+@using SpiceWeb.Mvc.Core.Extensions
+
+@{
+    ViewData["Title"] = "Create Sub Category";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<br />
+<h2 class="text-info">Create Sub Category</h2>
+<br />
+
+<!--calling partial view Error Message in Shared Folder to Display Duplicate Sub Category Name with the same Category-->
+<partial name="_StatusMessage" model="Model.StatusMessage" />
+
+<div class="border backgroundWhite row">
+    <div class="col-8 border-right">
+        <form method="post" asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group row">
+                <div class="col-3">
+                    <label asp-for="SubCategory.CategoryId" class="col-form-label"></label>
+                </div>
+                <div class="col-5">
+                    <select id="ddlCategorylist" asp-for="SubCategory.CategoryId" asp-items="Model.CategoryList.ToSelectListItem(Model.SubCategory.CategoryId)" class="form-control"></select>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-3">
+                    <label asp-for="SubCategory.Name" class="col-form-label"></label>
+                </div>
+                <div class="col-5">
+                    <input asp-for="SubCategory.Name" class="form-control" />
+                </div>
+                <span asp-validation-for="SubCategory.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group row">
+                <div class="col-5 offset-3">
+                    <!--CALLING PARTIAL VIEW _CreateAndBackToListButtonPartial-->
+                    <partial name="_CreateAndBackToListButton" />
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-3 offset-1">
+        @if (Model.SubCategoryList.Count() > 0)
+        {
+            <p>Existing Sub Categories:</p>
+            <div id="SubCategoryList">
+                <ul class="list-group"></ul>
+            </div>
+        }
+    </div>
+
+
+</div>
+
+<!--MUSING _ValidationScriptsPartial because inside is contain jquery validation that we use to get sub category and no need add jquery anymore-->
+@section Scripts{
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+
+        function updateSubCategoryList() {
+            var categorySelected = document.getElementById("ddlCategorylist").value;
+
+            $list = $('#SubCategoryList');
+
+            $.ajax({
+                url: '/Admin/SubCategory/GetSubCategory/' + categorySelected,
+                type: 'GET',
+                dataType: 'text',
+                success: function (data) {
+                    results = JSON.parse(data);
+                    $list.html('');
+                    $list.append('<ul class="list-group"');
+                    for (i in results) {
+                        $list.append('<li class="list-group-item">' + results[i].text + '</li>');
+                    }
+                    $list.append('</ul>');
+                }
+            });
+        }
+
+        //when page on load
+        $(document).ready(function () {
+            updateSubCategoryList();
+        });
+
+        //when ddlCategorylist dropdown change value
+        $('#ddlCategorylist').on('change', function () {
+            updateSubCategoryList();
+        });
+
+    </script>
+}
+
+

@@ -1,0 +1,61 @@
+﻿@model SubCategoryAndCategoryViewModel
+@using SpiceWeb.Mvc.Core.Extensions
+
+@{
+    ViewData["Title"] = "Delete Sub Category";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<br />
+<h2 class="text-info">Edit Sub Category</h2>
+<br />
+
+<!--calling partial view Error Message in Shared Folder to Display Duplicate Sub Category Name with the same Category-->
+<partial name="_StatusMessage" model="Model.StatusMessage" />
+
+<div class="border backgroundWhite row">
+    <div class="col-8 border-right">
+        <form method="post" asp-action="Delete">
+
+            <input type="hidden" asp-for="SubCategory.CategoryId" />
+            <input type="hidden" asp-for="SubCategory.Id" />
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group row">
+                <div class="col-3">
+                    <label asp-for="SubCategory.CategoryId" class="col-form-label"></label>
+                </div>
+                <div class="col-5">
+                    <input asp-for="SubCategory.Category.Name" class="form-control" disabled />
+                    @*<select id="ddlCategorylist" asp-for="SubCategory.CategoryId" disabled asp-items="Model.CategoryList.ToSelectListItem(Model.SubCategory.CategoryId)" class="form-control"></select>*@
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-3">
+                    <label asp-for="SubCategory.Name" class="col-form-label"></label>
+                </div>
+                <div class="col-5">
+                    <input asp-for="SubCategory.Name" class="form-control" disabled />
+                </div>
+                <span asp-validation-for="SubCategory.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group row">
+                <div class="col-5 offset-3">
+                    <!--CALLING PARTIAL VIEW _CreateAndBackToListButtonPartial-->
+                    <partial name="_DeleteAndBackToListButton" model="Model.SubCategory.Id" />
+                </div>
+            </div>
+        </form>
+    </div>
+    @*<div class="col-3 offset-1">
+        @if (Model.SubCategoryList.Count() > 0)
+        {
+            <p>Existing Sub Categories:</p>
+            <div id="SubCategoryList">
+                <ul class="list-group"></ul>
+            </div>
+        }
+    </div>*@
+
+
+</div>
