@@ -29,7 +29,7 @@
                             <div class="dropdown-menu" aria-labelledby="navbarDropDownMenuLink">
                                 <a class="dropdown-item" asp-action="Index" asp-controller="Category" asp-area="Admin">Category</a>
                                 <a class="dropdown-item" asp-action="Index" asp-controller="SubCategory" asp-area="Admin">Sub Category</a>
-                                <a class="dropdown-item">Menu Item</a>
+                                <a class="dropdown-item" asp-action="Index" asp-controller="MenuItem" asp-area="Admin">Menu Item</a>
                                 <a class="dropdown-item">Coupons</a>
                                 <a class="dropdown-item">Users</a>
                             </div>
@@ -57,9 +57,12 @@
             &copy; 2020 - Amin Vincent
         </div>
     </footer>
+    <!--ADDED TINYMCE into Create Form Menu Item-->
+    <script src="https://cdn.tiny.cloud/1/l696rjokxyuz515slgcbjp0gg5rgwb7wjspazs502ux8welf/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @RenderSection("Scripts", required: false)
+
 </body>
 </html>
