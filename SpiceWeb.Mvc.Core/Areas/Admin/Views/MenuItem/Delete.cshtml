@@ -2,21 +2,19 @@
 @using SpiceWeb.Mvc.Core.Extensions
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Delete";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <br />
-<h2 class="text-info">Edit MenuItem</h2>
+<h2 class="text-info">Delete Menu Item</h2>
 <br />
 
 <!--add multipart/form-data to upload image-->
-<form method="post" enctype="multipart/form-data" asp-action="Edit">
+<form method="post" enctype="multipart/form-data" asp-action="Delete">
     <div class="border backgroundWhite row">
         <!--hidden menu item id to edit-->
         <input type="hidden" asp-for="MenuItem.Id" />
-
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
         <div class="col-8">
             <div class="form-group row">
@@ -24,9 +22,8 @@
                     <label asp-for="MenuItem.Name" class="col-form-label"></label>
                 </div>
                 <div class="col-10">
-                    <input asp-for="MenuItem.Name" class="form-control" />
+                    <input asp-for="MenuItem.Name" class="form-control" readonly />
                 </div>
-                <span asp-validation-for="MenuItem.Name" class="text-danger"></span>
             </div>
             <div class="form-group row">
                 <div class="col-2">
@@ -35,23 +32,13 @@
                 <div class="col-10">
                     @Html.TextAreaFor(m => m.MenuItem.Description)
                 </div>
-                <span asp-validation-for="MenuItem.Description" class="text-danger"></span>
             </div>
             <div class="form-group row">
                 <div class="col-2">
                     <label asp-for="MenuItem.Price" class="col-form-label"></label>
                 </div>
                 <div class="col-10">
-                    <input asp-for="MenuItem.Price" class="form-control" />
-                </div>
-                <span asp-validation-for="MenuItem.Price" class="text-danger"></span>
-            </div>
-            <div class="form-group row">
-                <div class="col-2">
-                    <label asp-for="MenuItem.Image" class="col-form-label"></label>
-                </div>
-                <div class="col-10">
-                    <input type="file" name="files" multiple class="form-control" />
+                    <input asp-for="MenuItem.Price" class="form-control" readonly />
                 </div>
             </div>
             <div class="form-group row">
@@ -59,7 +46,8 @@
                     <label asp-for="MenuItem.CategoryId" class="col-form-label"></label>
                 </div>
                 <div class="col-10">
-                    <select asp-for="MenuItem.CategoryId" id="CategoryId" asp-items="Model.Category.ToSelectListItem(Model.MenuItem.CategoryId)" class="form-control"></select>
+                    
+                    <input asp-for="MenuItem.Category.Name" class="form-control" readonly/>
                 </div>
             </div>
             <div class="form-group row">
@@ -67,7 +55,8 @@
                     <label asp-for="MenuItem.SubCategoryId" class="col-form-label"></label>
                 </div>
                 <div class="col-10">
-                    <select asp-for="MenuItem.SubCategoryId" name="SubCategoryId" id="SubCategoryId" asp-items="@(new SelectList(string.Empty, "Id","Name"))" class="form-control"></select>
+                    
+                    <input asp-for="MenuItem.SubCategory.Name" class="form-control" readonly />
                 </div>
             </div>
             <div class="form-group row">
@@ -75,7 +64,7 @@
                     <label asp-for="MenuItem.Spicyness" class="col-form-label"></label>
                 </div>
                 <div class="col-10">
-                    <select asp-for="MenuItem.Spicyness" asp-items="Html.GetEnumSelectList<MenuItem.ESpicy>()" class="form-control"></select>
+                    <select asp-for="MenuItem.Spicyness" asp-items="Html.GetEnumSelectList<MenuItem.ESpicy>()" class="form-control" disabled></select>
                 </div>
 
             </div>
@@ -87,7 +76,7 @@
         <div class="col-8">
             <div class="col-8 offset-4">
                 <!--CALLING PARTIAL VIEW _CreateAndBackToListButtonPartial-->
-                <partial name="_EditAndBackToListButton" model="Model.MenuItem.Id" />
+                <partial name="_DeleteAndBackToListButton" model="Model.MenuItem.Id" />
             </div>
         </div>
 
@@ -100,32 +89,9 @@
         tinymce.init({
             selector: "textarea", //target to text area in Description
             plugins: "lists",
-            menubar: "file edit format"
+            menubar: "file edit format",
+            readonly: 1 //read only true
         });
-    </script>
-
-    <script type="text/javascript">
-        $(document).ready(function () {
-            getSubCategory();
-
-            $('#CategoryId').change(function () {
-                getSubCategory();
-            });
-        });
-
-        function getSubCategory() {
-            var url = '@Url.Content("~/")' + "Admin/SubCategory/GetSubCategory";
-            var ddlsource = '#CategoryId';
-            $.getJSON(url, { id: $(ddlsource).val() }, function (data) {
-                var items = '';
-                $('#SubCategoryId').empty();
-                $.each(data, function (i, subcategory) {
-                    items += "<option value='" + subcategory.value + "'>" + subcategory.text + "</option>";
-                });
-
-                $('#SubCategoryId').html(items);
-            })
-        }
     </script>
 
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial");} <!--untuk memunculkan fungsi validasi-->

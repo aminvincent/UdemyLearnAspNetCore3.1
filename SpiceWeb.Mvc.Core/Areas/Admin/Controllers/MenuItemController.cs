@@ -91,7 +91,7 @@ namespace SpiceWeb.Mvc.Core.Areas.Admin.Controllers
         }
 
         //GET - EDIT
-        public async  Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
@@ -122,11 +122,9 @@ namespace SpiceWeb.Mvc.Core.Areas.Admin.Controllers
 
             if (!ModelState.IsValid)
             {
+                MenuItemVM.SubCategory = await _db.SubCategory.Where(x => x.CategoryId == MenuItemVM.MenuItem.CategoryId).ToListAsync(); //agar tidak error ketika update gagal pada sub category
                 return View(MenuItemVM);
             }
-
-            _db.MenuItem.Add(MenuItemVM.MenuItem);
-            await _db.SaveChangesAsync();
 
             //untuk upload simpan gambar pada folder Images yang ada di wwwroot
             string webrootpath = _hostingEnvironment.WebRootPath;
@@ -135,25 +133,101 @@ namespace SpiceWeb.Mvc.Core.Areas.Admin.Controllers
             var menuItemFormDb = await _db.MenuItem.FindAsync(MenuItemVM.MenuItem.Id);
             if (files.Count > 0)
             {
-                //file sudah pernah di upload
+                //file sudah di upload
                 var uploads = Path.Combine(webrootpath, "images"); //ambil dari folder images
-                var extension = Path.GetExtension(files[0].FileName);
+                var extension_new = Path.GetExtension(files[0].FileName);
 
-                using (var filesStream = new FileStream(Path.Combine(uploads, MenuItemVM.MenuItem.Id + extension), FileMode.Create))
+                //delete original file
+                var imagePath = Path.Combine(webrootpath, menuItemFormDb.Image.TrimStart('\\')); //trim \ pertama pada field Image ex: \images\3.png
+                if (System.IO.File.Exists(imagePath))
+                {
+                    System.IO.File.Delete(imagePath);
+                }
+
+                //we will upload the new file image
+                using (var filesStream = new FileStream(Path.Combine(uploads, MenuItemVM.MenuItem.Id + extension_new), FileMode.Create))
                 {
                     files[0].CopyTo(filesStream);
                 }
 
-                menuItemFormDb.Image = @"\images\" + MenuItemVM.MenuItem.Id + extension;
-            }
-            else
-            {
-                //file belum pernah di upload
-                var uploads = Path.Combine(webrootpath, @"images\" + SD.DefaultFoodImage);
-                System.IO.File.Copy(uploads, webrootpath + @"\images\" + MenuItemVM.MenuItem.Id + ".png");
-                menuItemFormDb.Image = @"\images\" + MenuItemVM.MenuItem.Id + ".png";
+                menuItemFormDb.Image = @"\images\" + MenuItemVM.MenuItem.Id + extension_new;
             }
 
+            menuItemFormDb.Name = MenuItemVM.MenuItem.Name;
+            menuItemFormDb.Description = MenuItemVM.MenuItem.Description;
+            menuItemFormDb.Price = MenuItemVM.MenuItem.Price;
+            menuItemFormDb.Spicyness = MenuItemVM.MenuItem.Spicyness;
+            menuItemFormDb.CategoryId = MenuItemVM.MenuItem.CategoryId;
+            menuItemFormDb.SubCategoryId = MenuItemVM.MenuItem.SubCategoryId;
+
+            await _db.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        //GET - DETAIL
+        public async Task<IActionResult> Detail(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            MenuItemVM.MenuItem = await _db.MenuItem.Include(x => x.Category).Include(x => x.SubCategory).SingleOrDefaultAsync(x => x.Id == id);
+            if (MenuItemVM.MenuItem == null)
+            {
+                return NotFound();
+            }
+            return View(MenuItemVM); //langsung memanggil bind property yang sudah diberikan value pada constructor
+        }
+
+        //GET - DELETE
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            MenuItemVM.MenuItem = await _db.MenuItem.Include(x => x.Category).Include(x => x.SubCategory).SingleOrDefaultAsync(x => x.Id == id);
+
+            if (MenuItemVM.MenuItem == null)
+            {
+                return NotFound();
+            }
+            return View(MenuItemVM); //langsung memanggil bind property yang sudah diberikan value pada constructor
+        }
+
+        //POST - DELETE
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeletePOST(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            //delete image
+            string webrootpath = _hostingEnvironment.WebRootPath;
+
+            var menuItemFormDb = await _db.MenuItem.FindAsync(MenuItemVM.MenuItem.Id);
+            if (menuItemFormDb == null)
+            {
+                return View();
+            }
+
+            if (menuItemFormDb.Image != null)
+            {
+                //delete file
+                var imagePath = Path.Combine(webrootpath, menuItemFormDb.Image.TrimStart('\\')); //trim \ pertama pada field Image ex: \images\3.png
+                if (System.IO.File.Exists(imagePath))
+                {
+                    System.IO.File.Delete(imagePath);
+                }
+            }
+
+            _db.MenuItem.Remove(menuItemFormDb);
             await _db.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));

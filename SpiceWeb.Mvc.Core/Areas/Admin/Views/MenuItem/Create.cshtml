@@ -18,7 +18,7 @@
             <div class="col-2">
                 <label asp-for="MenuItem.Name" class="col-form-label"></label>
             </div>
-            <div class="col-5">
+            <div class="col-7">
                 <input asp-for="MenuItem.Name" class="form-control" />
             </div>
             <span asp-validation-for="MenuItem.Name" class="text-danger"></span>
@@ -27,7 +27,7 @@
             <div class="col-2">
                 <label asp-for="MenuItem.Description" class="col-form-label"></label>
             </div>
-            <div class="col-5">
+            <div class="col-7">
                 @Html.TextAreaFor(m => m.MenuItem.Description)
             </div>
             <span asp-validation-for="MenuItem.Description" class="text-danger"></span>
@@ -36,7 +36,7 @@
             <div class="col-2">
                 <label asp-for="MenuItem.Price" class="col-form-label"></label>
             </div>
-            <div class="col-5">
+            <div class="col-7">
                 <input asp-for="MenuItem.Price" class="form-control" />
             </div>
             <span asp-validation-for="MenuItem.Price" class="text-danger"></span>
@@ -45,7 +45,7 @@
             <div class="col-2">
                 <label asp-for="MenuItem.Image" class="col-form-label"></label>
             </div>
-            <div class="col-5">
+            <div class="col-7">
                 <input type="file" name="files" multiple class="form-control" />
             </div>
         </div>
@@ -53,7 +53,7 @@
             <div class="col-2">
                 <label asp-for="MenuItem.CategoryId" class="col-form-label"></label>
             </div>
-            <div class="col-5">
+            <div class="col-7">
                 <select asp-for="MenuItem.CategoryId" id="CategoryId" asp-items="Model.Category.ToSelectListItem(Model.MenuItem.CategoryId)" class="form-control"></select>
             </div>
         </div>
@@ -61,7 +61,7 @@
             <div class="col-2">
                 <label asp-for="MenuItem.SubCategoryId" class="col-form-label"></label>
             </div>
-            <div class="col-5">
+            <div class="col-7">
                 <select asp-for="MenuItem.SubCategoryId" name="SubCategoryId" id="SubCategoryId" asp-items="@(new SelectList(string.Empty, "Id","Name"))" class="form-control"></select>
             </div>
         </div>
@@ -69,7 +69,7 @@
             <div class="col-2">
                 <label asp-for="MenuItem.Spicyness" class="col-form-label"></label>
             </div>
-            <div class="col-5">
+            <div class="col-7">
                 <select asp-for="MenuItem.Spicyness" asp-items="Html.GetEnumSelectList<MenuItem.ESpicy>()" class="form-control"></select>
             </div>
 

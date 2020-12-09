@@ -1,0 +1,96 @@
+﻿@model MenuItemViewModel
+@using SpiceWeb.Mvc.Core.Extensions
+
+@{
+    ViewData["Title"] = "Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<br />
+<h2 class="text-info">Delete Menu Item</h2>
+<br />
+
+<div class="border backgroundWhite row">
+    <!--hidden menu item id to edit-->
+    <input type="hidden" asp-for="MenuItem.Id" />
+
+    <div class="col-8">
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="MenuItem.Name" class="col-form-label"></label>
+            </div>
+            <div class="col-10">
+                <input asp-for="MenuItem.Name" class="form-control" readonly />
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="MenuItem.Description" class="col-form-label"></label>
+            </div>
+            <div class="col-10">
+                @Html.TextAreaFor(m => m.MenuItem.Description)
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="MenuItem.Price" class="col-form-label"></label>
+            </div>
+            <div class="col-10">
+                <input asp-for="MenuItem.Price" class="form-control" readonly />
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="MenuItem.CategoryId" class="col-form-label"></label>
+            </div>
+            <div class="col-10">
+                
+                <input asp-for="MenuItem.Category.Name" class="form-control" readonly />
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="MenuItem.SubCategoryId" class="col-form-label"></label>
+            </div>
+            <div class="col-10">
+                
+                <input asp-for="MenuItem.SubCategory.Name" class="form-control" readonly />
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="MenuItem.Spicyness" class="col-form-label"></label>
+            </div>
+            <div class="col-10">
+                <select asp-for="MenuItem.Spicyness" asp-items="Html.GetEnumSelectList<MenuItem.ESpicy>()" class="form-control" disabled></select>
+            </div>
+
+        </div>
+    </div>
+    <div class="col-3 offset-1">
+        <img src="@Model.MenuItem.Image" width="100%" style="border-radius:5px;border:1px solid #bbb9b9;" />
+    </div>
+
+    <div class="col-8">
+        <div class="col-8 offset-4">
+            <!--CALLING PARTIAL VIEW _CreateAndBackToListButtonPartial-->
+            <partial name="_DetailAndBackToListButton" model="Model.MenuItem.Id" />
+        </div>
+    </div>
+
+</div>
+
+
+@section Scripts{
+    <script>
+        //tinymce already added from _Layout.cshtml (main template)
+        tinymce.init({
+            selector: "textarea", //target to text area in Description
+            plugins: "lists",
+            menubar: "file edit format",
+            readonly: 1 //read only true
+        });
+    </script>
+
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial");} <!--untuk memunculkan fungsi validasi-->
+}
