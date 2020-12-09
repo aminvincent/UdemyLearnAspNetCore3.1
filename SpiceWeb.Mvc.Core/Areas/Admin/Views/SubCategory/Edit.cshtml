@@ -61,7 +61,7 @@
 
 <!--MUSING _ValidationScriptsPartial because inside is contain jquery validation that we use to get sub category and no need add jquery anymore-->
 @section Scripts{
-    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial");} <!--untuk membuat validasi js-->
 
     <script>
 
@@ -91,11 +91,11 @@
             updateSubCategoryList();
         });
 
-        //do not need this cz ddlCategorylist is disabled when edit
-        ////when ddlCategorylist dropdown change value
-        //$('#ddlCategorylist').on('change', function () {
-        //    updateSubCategoryList();
-        //});
+            //do not need this cz ddlCategorylist is disabled when edit
+            ////when ddlCategorylist dropdown change value
+            //$('#ddlCategorylist').on('change', function () {
+            //    updateSubCategoryList();
+            //});
 
     </script>
 }

@@ -57,7 +57,7 @@
 
 <!--MUSING _ValidationScriptsPartial because inside is contain jquery validation that we use to get sub category and no need add jquery anymore-->
 @section Scripts{
-    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial");} <!--untuk membuat validasi js-->
 
     <script>
 
@@ -94,5 +94,7 @@
 
     </script>
 }
+
+
 
 
