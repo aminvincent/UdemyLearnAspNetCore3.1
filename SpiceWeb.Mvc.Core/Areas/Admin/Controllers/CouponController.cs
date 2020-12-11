@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SpiceWeb.Mvc.Core.Data;
+using SpiceWeb.Mvc.Core.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -25,5 +27,49 @@ namespace SpiceWeb.Mvc.Core.Areas.Admin.Controllers
         {
             return View();
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Coupon coupon)
+        {
+            if (ModelState.IsValid)
+            {
+                var files = HttpContext.Request.Form.Files;
+                if (files.Count > 0)
+                {
+                    byte[] p1 = null;
+                    using (var fs1 = files[0].OpenReadStream()) //start reading a file 
+                    {
+                        using (var ms1 = new MemoryStream())
+                        {
+                            fs1.CopyTo(ms1);
+                            p1 = ms1.ToArray();
+                        }
+                    }
+                    coupon.Picture = p1;
+                }
+                _db.Coupon.Add(coupon);
+                await _db.SaveChangesAsync();
+                return RedirectToAction(nameof(Index)); //redirect to index while success
+            }
+            return View(coupon); //while model state is not valid display as view 
+        }
+
+        //GET - EDIT
+        public async Task<IActionResult> Edit(int? Id)
+        {
+            if (Id == null)
+            {
+                return NotFound();
+            }
+            var coupon = await _db.Coupon.FindAsync(Id);
+            if (coupon == null)
+            {
+                return NotFound();
+            }
+            return View(coupon);
+        }
+
+        //POST - EDIT
     }
 }
