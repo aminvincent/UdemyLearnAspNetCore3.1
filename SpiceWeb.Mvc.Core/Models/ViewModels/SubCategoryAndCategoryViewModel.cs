@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SpiceWeb.Mvc.Core.Models
+namespace SpiceWeb.Mvc.Core.Models.ViewModels
 {
     public class SubCategoryAndCategoryViewModel
     {

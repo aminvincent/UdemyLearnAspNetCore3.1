@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SpiceWeb.Mvc.Core.Data;
 using SpiceWeb.Mvc.Core.Models;
+using SpiceWeb.Mvc.Core.Models.ViewModels;
 
 namespace SpiceWeb.Mvc.Core.Areas.Admin.Controllers
 {

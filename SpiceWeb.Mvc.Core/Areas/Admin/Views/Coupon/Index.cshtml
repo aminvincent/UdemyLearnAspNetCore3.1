@@ -33,9 +33,6 @@
                         @Html.DisplayNameFor(m => m.MinimumAmount)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(m => m.CouponType)
-                    </th>
-                    <th>
                         @Html.DisplayNameFor(m => m.IsActive)
                     </th>
 
@@ -49,27 +46,24 @@
                 </tr>
                 @foreach (var item in Model)
                 {
-            <tr>
-                <td>
-                    @Html.DisplayFor(m => item.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(m => item.Discount)
-                </td>
-                <td>
-                    @Html.DisplayFor(m => item.MinimumAmount)
-                </td>
-                <td>
-                    @Html.DisplayFor(m => item.CouponType)
-                </td>
-                <td>
-                    @Html.DisplayFor(m => item.IsActive)
-                </td>
-                <td>
-                    @*EDIT | DELETE | DETAILS*@
-                    <partial name="_TableButtonPartial" model="item.Id" />
-                </td>
-            </tr>
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(m => item.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => item.Discount)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => item.MinimumAmount)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => item.IsActive)
+                        </td>
+                        <td>
+                            @*EDIT | DELETE | DETAILS*@
+                            <partial name="_TableButtonPartial" model="item.Id" />
+                        </td>
+                    </tr>
                 }
             </table>
         }

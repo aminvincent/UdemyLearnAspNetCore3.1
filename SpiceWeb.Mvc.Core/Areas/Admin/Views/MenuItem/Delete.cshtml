@@ -1,4 +1,4 @@
-﻿@model MenuItemViewModel
+﻿@model SpiceWeb.Mvc.Core.Models.ViewModels.MenuItemViewModel
 @using SpiceWeb.Mvc.Core.Extensions
 
 @{
@@ -46,8 +46,8 @@
                     <label asp-for="MenuItem.CategoryId" class="col-form-label"></label>
                 </div>
                 <div class="col-10">
-                    
-                    <input asp-for="MenuItem.Category.Name" class="form-control" readonly/>
+
+                    <input asp-for="MenuItem.Category.Name" class="form-control" readonly />
                 </div>
             </div>
             <div class="form-group row">
@@ -55,7 +55,7 @@
                     <label asp-for="MenuItem.SubCategoryId" class="col-form-label"></label>
                 </div>
                 <div class="col-10">
-                    
+
                     <input asp-for="MenuItem.SubCategory.Name" class="form-control" readonly />
                 </div>
             </div>

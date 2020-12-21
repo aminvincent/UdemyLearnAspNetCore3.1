@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SpiceWeb.Mvc.Core.Data;
 using SpiceWeb.Mvc.Core.Models;
+using SpiceWeb.Mvc.Core.Models.ViewModels;
 using SpiceWeb.Mvc.Core.Utility;
 
 namespace SpiceWeb.Mvc.Core.Areas.Admin.Controllers
