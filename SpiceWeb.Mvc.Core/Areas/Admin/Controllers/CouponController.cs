@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SpiceWeb.Mvc.Core.Data;
 using SpiceWeb.Mvc.Core.Models;
+using SpiceWeb.Mvc.Core.Utility;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,6 +13,7 @@ using System.Threading.Tasks;
 namespace SpiceWeb.Mvc.Core.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = SD.ManagerUser)] //only Manager User can Access
     public class CouponController : Controller
     {
         private readonly ApplicationDbContext _db;
