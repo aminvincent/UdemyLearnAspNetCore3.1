@@ -1,5 +1,9 @@
 ﻿@using SpiceWeb.Mvc.Core.Utility
 
+@*menambahakan ini agar bisa menggunakan session pada html*@
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -45,11 +49,26 @@
                             </li>
                         }
 
-                        <li style="color:white">
-                            <a href="#" class="nav-link">
-                                <i class="fas fa-shopping-cart"> &nbsp; (0)</i>
-                            </a>
-                        </li>
+                        @* check session untk ditampilka di shooping cart count *@
+                        @if (HttpContextAccessor.HttpContext.Session.GetInt32(@SD.ssShoppingCartCount) != null)
+                        {
+                            <li style="color:white">
+                                <a href="#" class="nav-link">
+                                    @{
+                                        var count = HttpContextAccessor.HttpContext.Session.GetInt32(@SD.ssShoppingCartCount);
+                                    }
+                                    <i class="fas fa-shopping-cart"> &nbsp; (@count)</i>
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li style="color:white">
+                                <a href="#" class="nav-link">
+                                    <i class="fas fa-shopping-cart"> &nbsp; (0)</i>
+                                </a>
+                            </li>
+                        }
 
 
                         @*<li class="nav-item">

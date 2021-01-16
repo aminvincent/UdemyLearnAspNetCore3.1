@@ -55,6 +55,14 @@ namespace SpiceWeb.Mvc.Core
             //original sebelum menggunakan Runtime Compilation
             //services.AddRazorPages();
 
+            //menambahkan session yang digunakan untuk menghitung jumlah shopping cart
+            services.AddSession(options =>
+            {
+                options.Cookie.IsEssential = true;
+                options.IdleTimeout = TimeSpan.FromMinutes(30); //set hanya 30 menit.
+                options.Cookie.HttpOnly = true;
+            });
+
             //menggunakan runtime compilation agar project auto refresh/compile ketika ada perubahan di codingan
             services.AddRazorPages().AddRazorRuntimeCompilation();
         }
@@ -77,6 +85,8 @@ namespace SpiceWeb.Mvc.Core
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseSession(); //tambahakn ini agar session yg sudah di tambahkan di ConfigureServices bisa berfungsi
 
             app.UseAuthentication();
             app.UseAuthorization();

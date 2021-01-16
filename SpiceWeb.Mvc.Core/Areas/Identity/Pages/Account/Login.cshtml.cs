@@ -11,6 +11,11 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using SpiceWeb.Mvc.Core.Data;
+using Microsoft.EntityFrameworkCore;
+using SpiceWeb.Mvc.Core.Models;
+using Microsoft.AspNetCore.Http;
+using SpiceWeb.Mvc.Core.Utility;
 
 namespace SpiceWeb.Mvc.Core.Areas.Identity.Pages.Account
 {
@@ -21,13 +26,17 @@ namespace SpiceWeb.Mvc.Core.Areas.Identity.Pages.Account
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
 
+        //menambahkan instance ef
+        private readonly ApplicationDbContext _db; 
+
         public LoginModel(SignInManager<IdentityUser> signInManager, 
             ILogger<LoginModel> logger,
-            UserManager<IdentityUser> userManager)
+            UserManager<IdentityUser> userManager, ApplicationDbContext db)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
+            _db = db;
         }
 
         [BindProperty]
@@ -82,6 +91,13 @@ namespace SpiceWeb.Mvc.Core.Areas.Identity.Pages.Account
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
+                    //check session ketika login untuk shopping cart
+                    var user = await _db.Users.Where(x => x.Email == Input.Email).FirstOrDefaultAsync();
+
+                    List<ShoppingCart> lstShoppingCart = await _db.ShoppingCart.Where(x => x.ApplicationUserId == user.Id).ToListAsync();
+
+                    HttpContext.Session.SetInt32(SD.ssShoppingCartCount, lstShoppingCart.Count()); //SD.ssShoppingCartCount adalah session name
+
                     _logger.LogInformation("User logged in.");
                     return LocalRedirect(returnUrl);
                 }
