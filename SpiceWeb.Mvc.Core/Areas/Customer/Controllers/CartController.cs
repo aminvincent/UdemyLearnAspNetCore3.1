@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SpiceWeb.Mvc.Core.Data;
 using SpiceWeb.Mvc.Core.Models.ViewModels;
@@ -54,7 +55,39 @@ namespace SpiceWeb.Mvc.Core.Areas.Customer.Controllers
             }
             detailCart.OrderHeader.OrderTotalOriginal = detailCart.OrderHeader.OrderTotal;
 
+            //check session coupon code
+            if (HttpContext.Session.GetString(SD.ssCouponCode) != null)
+            {
+                //get coupon code dari session
+                detailCart.OrderHeader.CouponCode = HttpContext.Session.GetString(SD.ssCouponCode);
+                //check coupon code pada db
+                var couponFromDb = await _db.Coupon.Where(x => x.Name.ToLower() == detailCart.OrderHeader.CouponCode.ToLower()).FirstOrDefaultAsync();
+                //implement coupon code pada OrderTotal
+                detailCart.OrderHeader.OrderTotal = SD.DiscountedPrice(couponFromDb, detailCart.OrderHeader.OrderTotalOriginal);
+            }
+
             return View(detailCart);
+        }
+
+        public IActionResult AddCoupon()
+        {
+            if (detailCart.OrderHeader.CouponCode == null)
+            {
+                detailCart.OrderHeader.CouponCode = "";
+            }
+
+            //simpan coupon code di session
+            HttpContext.Session.SetString(SD.ssCouponCode, detailCart.OrderHeader.CouponCode);
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult RemoveCoupon()
+        {
+            //reset coupon code session with empty value
+            HttpContext.Session.SetString(SD.ssCouponCode, string.Empty);
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SpiceWeb.Mvc.Core.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,7 +16,8 @@ namespace SpiceWeb.Mvc.Core.Utility
         public const string FrontDeskUser = "FrontDesk";
         public const string CustomerEndUser = "Customer";
 
-        public const string ssShoppingCartCount = "ssCartCount";
+        public const string ssShoppingCartCount = "ssCartCount"; //session cart count
+        public const string ssCouponCode = "ssCouponCode"; //session coupon code
 
         //convert raw html
         public static string ConvertToRawHtml(string source)
@@ -44,6 +46,39 @@ namespace SpiceWeb.Mvc.Core.Utility
                 }
             }
             return new string(array, 0, arrayIndex);
+        }
+
+        //calculated Discount Price pada Cart
+        public static double DiscountedPrice(Coupon couponFromDb, double OriginalOrderTotal)
+        {
+            if (couponFromDb == null)
+            {
+                return OriginalOrderTotal;
+            }
+            else
+            {
+                if (couponFromDb.MinimumAmount > OriginalOrderTotal)
+                {
+                    return OriginalOrderTotal;
+                }
+                else
+                {
+                    //everything is alid
+                    if (Convert.ToInt32(couponFromDb.CouponType) == (int)Coupon.ECouponType.Dollar)
+                    {
+                        //$10 off $100
+                        return Math.Round(OriginalOrderTotal - couponFromDb.Discount, 2);
+                    }
+
+                    if (Convert.ToInt32(couponFromDb.CouponType) == (int)Coupon.ECouponType.Percent)
+                    {
+                        //10% off $100
+                        return Math.Round(OriginalOrderTotal - (OriginalOrderTotal * couponFromDb.Discount / 100), 2);
+                    }
+                }
+            }
+
+            return OriginalOrderTotal;
         }
     }
 }
