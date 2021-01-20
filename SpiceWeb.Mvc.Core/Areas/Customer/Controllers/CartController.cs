@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SpiceWeb.Mvc.Core.Data;
+using SpiceWeb.Mvc.Core.Models;
 using SpiceWeb.Mvc.Core.Models.ViewModels;
 using SpiceWeb.Mvc.Core.Utility;
 using System;
@@ -69,6 +70,50 @@ namespace SpiceWeb.Mvc.Core.Areas.Customer.Controllers
             return View(detailCart);
         }
 
+        public async Task<IActionResult> Summary()
+        {
+            detailCart = new OrderDetailsCart()
+            {
+                OrderHeader = new Models.OrderHeader()
+            };
+
+            detailCart.OrderHeader.OrderTotal = 0;
+
+            //get login user id
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            ApplicationUser applicationUser = await _db.ApplicationUser.Where(x => x.Id == claim.Value).FirstOrDefaultAsync();
+
+            var cart = _db.ShoppingCart.Where(x => x.ApplicationUserId == claim.Value);
+            if (cart != null)
+            {
+                detailCart.listCart = cart.ToList();
+            }
+
+            foreach (var item in detailCart.listCart)
+            {
+                item.MenuItem = await _db.MenuItem.FirstOrDefaultAsync(x => x.Id == item.MenuItemId);
+                detailCart.OrderHeader.OrderTotal = detailCart.OrderHeader.OrderTotal + (item.MenuItem.Price * item.Count);
+            }
+            detailCart.OrderHeader.OrderTotalOriginal = detailCart.OrderHeader.OrderTotal;
+            detailCart.OrderHeader.PickupName = applicationUser.Name;
+            detailCart.OrderHeader.PhoneNumber = applicationUser.PhoneNumber;
+            detailCart.OrderHeader.PickupTime = DateTime.Now;
+
+            //check session coupon code
+            if (HttpContext.Session.GetString(SD.ssCouponCode) != null)
+            {
+                //get coupon code dari session
+                detailCart.OrderHeader.CouponCode = HttpContext.Session.GetString(SD.ssCouponCode);
+                //check coupon code pada db
+                var couponFromDb = await _db.Coupon.Where(x => x.Name.ToLower() == detailCart.OrderHeader.CouponCode.ToLower()).FirstOrDefaultAsync();
+                //implement coupon code pada OrderTotal
+                detailCart.OrderHeader.OrderTotal = SD.DiscountedPrice(couponFromDb, detailCart.OrderHeader.OrderTotalOriginal);
+            }
+
+            return View(detailCart);
+        }
+
         public IActionResult AddCoupon()
         {
             if (detailCart.OrderHeader.CouponCode == null)
@@ -86,6 +131,52 @@ namespace SpiceWeb.Mvc.Core.Areas.Customer.Controllers
         {
             //reset coupon code session with empty value
             HttpContext.Session.SetString(SD.ssCouponCode, string.Empty);
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Plus(int cartId)
+        {
+            var cart = await _db.ShoppingCart.FirstOrDefaultAsync(x => x.Id == cartId);
+            cart.Count += 1;
+            await _db.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Minus(int cartId)
+        {
+            var cart = await _db.ShoppingCart.FirstOrDefaultAsync(x => x.Id == cartId);
+            if (cart.Count==1)
+            {
+                //ketika count nya 1 maka hapus dari database shoppint cart karena ini fungsi Minus
+                _db.ShoppingCart.Remove(cart);
+                await _db.SaveChangesAsync();
+
+                //hapus session karena di remove
+                var cnt = _db.ShoppingCart.Where(x => x.ApplicationUserId == cart.ApplicationUserId).ToList().Count;
+                HttpContext.Session.SetInt32(SD.ssShoppingCartCount, cnt);
+            }
+            else
+            {
+                cart.Count -= 1;
+                await _db.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Remove(int cartId)
+        {
+            var cart = await _db.ShoppingCart.FirstOrDefaultAsync(x => x.Id == cartId);
+
+            //ketika count nya 1 maka hapus dari database shoppint cart karena ini fungsi Minus
+            _db.ShoppingCart.Remove(cart);
+            await _db.SaveChangesAsync();
+
+            //hapus session karena di remove
+            var cnt = _db.ShoppingCart.Where(x => x.ApplicationUserId == cart.ApplicationUserId).ToList().Count;
+            HttpContext.Session.SetInt32(SD.ssShoppingCartCount, cnt);
 
             return RedirectToAction(nameof(Index));
         }
