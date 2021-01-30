@@ -14,6 +14,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using SpiceWeb.Mvc.Core.Service;
+using SpiceWeb.Mvc.Core.Utility;
+using Stripe;
 
 namespace SpiceWeb.Mvc.Core
 {
@@ -40,6 +42,10 @@ namespace SpiceWeb.Mvc.Core
             services.AddIdentity<IdentityUser, IdentityRole>()
                 .AddDefaultTokenProviders() //berfungsi untuk mendapatkan token ketika user lupa password
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            //tambahkan stripe online payement agar membaca pengaturan dari appsettings.json
+            services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
+
             services.AddControllersWithViews();
 
             services.AddSingleton<IEmailSender, EmailSender>(); //menambahkan singleton pada EmailSender agar tidak error dan hanya menjadikan EmailSender menjadi 1 object
@@ -85,6 +91,10 @@ namespace SpiceWeb.Mvc.Core
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            //menambahkan stripe setting yg sudah diatur di method ConfigureServices
+            StripeConfiguration.ApiKey = Configuration.GetSection("Stripe")["SecretKey"];
+            //DotNET Core 2.2 StripeConfiguration.SetApiKey(Configuration.GetSection("Stripe")["SecretKey"]);
 
             app.UseSession(); //tambahakn ini agar session yg sudah di tambahkan di ConfigureServices bisa berfungsi
 

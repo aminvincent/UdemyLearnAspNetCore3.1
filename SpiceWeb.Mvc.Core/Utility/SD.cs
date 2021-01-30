@@ -19,6 +19,16 @@ namespace SpiceWeb.Mvc.Core.Utility
         public const string ssShoppingCartCount = "ssCartCount"; //session cart count
         public const string ssCouponCode = "ssCouponCode"; //session coupon code
 
+        public const string StatusSubmitted = "Submitted";
+        public const string StatusInProcess = "Being Prepared";
+        public const string StatusReady = "Ready for pickup";
+        public const string StatusCompleted = "Completed";
+        public const string StatusCancelled = "Cancelled";
+
+        public const string PaymentStatusPending = "Pending";
+        public const string PaymentStatusApproved = "Approved";
+        public const string PaymentStatusRejected = "Rejected";
+
         //convert raw html
         public static string ConvertToRawHtml(string source)
         {

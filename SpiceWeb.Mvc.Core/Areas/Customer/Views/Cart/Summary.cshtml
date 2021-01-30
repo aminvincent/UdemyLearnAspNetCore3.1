@@ -1,11 +1,16 @@
 ﻿@model SpiceWeb.Mvc.Core.Models.ViewModels.OrderDetailsCart
+@*untuk menggunaka Stripe online payment*@
+@using Microsoft.Extensions.Options
+
+@*menggunakan injection untuk define Stripe*@
+@inject IOptions<SpiceWeb.Mvc.Core.Utility.StripeSettings> Stripe
 
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<form action="/" method="post">
+<form method="post">
     @if (Model.listCart.Count > 0)
     {
         <br />
@@ -36,7 +41,7 @@
                                             <label>Name</label>
                                         </div>
                                         <div class="col-9">
-                                            <input asp-for="@Model.OrderHeader.PickupName" type="text" class="form-control" />
+                                            <input asp-for="@Model.OrderHeader.PickupName" id="txtName" type="text" class="form-control" />
                                         </div>
                                     </div>
                                     <div class="row my-1">
@@ -44,7 +49,7 @@
                                             <label>Phone</label>
                                         </div>
                                         <div class="col-9">
-                                            <input asp-for="@Model.OrderHeader.PhoneNumber" type="text" class="form-control" />
+                                            <input asp-for="@Model.OrderHeader.PhoneNumber" id="txtPhone" type="text" class="form-control" />
                                         </div>
                                     </div>
                                     <div class="row my-1">
@@ -103,7 +108,7 @@
                                         }
 
                                         <li class="list-group-item d-flex justify-content-between bg-light">
-                                            <small class="text-info">Total (USD)</small>
+                                            <strong class="text-info">Total (USD)</strong>
                                             <strong class="text-info">$@(Model.OrderHeader.OrderTotal)</strong>
                                         </li>
                                     </ul>
@@ -113,7 +118,29 @@
                         </div>
                     </div>
                     <div class="card-footer">
-
+                        <div class="row">
+                            <div class="col-12 col-md-4 offset-md-8">
+                                @{
+                                    var OrderTotalForStripe = Model.OrderHeader.OrderTotal * 100; //convert into cent
+                                }
+                                @* menambahkan Stripe UI Modal pada Summary *@
+                                <script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+                                        data-key="@Stripe.Value.PublishableKey"
+                                        data-amount="@OrderTotalForStripe"
+                                        data-name="Spice Restaurant"
+                                        data-label="Place Order"
+                                        data-description="Good Food, Good Mood"
+                                        data-locale="auto"
+                                        data-allow-remember-me="false"
+                                        data-image="https://stripe.com/img/documentation/checkout/marketplace.png">
+                                </script>
+                                <script>
+                                    //hide Stripe button place Order pada Summary
+                                    document.getElementsByClassName("stripe-button-el")[0].style.display = 'none';
+                                </script>
+                                <button type="submit" id="btnPlaceOrder" onclick="return validateInput()" class="btn btn-success form-control">Place Order</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -131,9 +158,90 @@
 
     <script>
         $(function () {
-            $("#datepicker").datepicker({ minDate: 0, maxDate: "+1W" }); /*set date picker only one week*/
 
-            $("#timepicker").timepicker({'minTime': '11:00 AM', 'maxTime':'9:00 PM'}); 
+            var minDt = 0;
+            if (getTimeFromCurrentDate() >= 20.00) {
+                minDt = 1;
+            }
+
+            $("#datepicker").datepicker({ minDate: minDt, maxDate: "+1W" }); /*set date picker only one week*/
+
+            $("#timepicker").timepicker({ 'minTime': '11:00 AM', 'maxTime': '9:00 PM', step: '30' });
         });
+
+        function setPickupTime() {
+            var dateSelected = document.getElementById("datepicker").value;
+            var dt = new Date(dateSelected);
+            var today = new Date();
+
+            dt.setHours(0, 0, 0, 0);
+            //jika tanggal yang dpilih lbih besar hari ini
+            if (dt > today) {
+                selectedTime = '11:00am';
+            }
+            else {
+                selectedTime = getTimeFromCurrentDate();
+            }
+
+            $('#timepicker').timepicker('option', 'minTime', selectedTime);
+        }
+
+        //mendapatkan datetime now
+        function getTimeFromCurrentDate() {
+            var curDt = new Date(); //get time now
+            var minTime = '';
+
+            if (curDt.getHours() < 11) {
+                minTime = '12:00pm';
+            }
+            else {
+                if (curDt.getMinutes() < 30) {
+                    minTime = (curDt.getHours() + 1).toString() + ':30pm';
+                }
+                else {
+                    minTime = (curDt.getHours() + 2).toString() + ':00pm';
+                }
+            }
+            return minTime;
+        }
+
+        //ketika datepicker di ubah maka akan menjalankan fungsi setPickupTime()
+        $('#datepicker').change(function () {
+            setPickupTime();
+        })
+
+        //validate input
+        function validateInput() {
+            var time = document.getElementById("timepicker").value;
+            var dt = document.getElementById("datepicker").value;
+            var name = document.getElementById("txtName").value;
+            var phone = document.getElementById("txtPhone").value;
+
+            if (dt.toString().length == 0) {
+                alert("please select pickup date");
+                return false;
+            }
+            else {
+                if (time.toString().length == 0) {
+                    alert("please select pickup time");
+                    return false;
+                }
+                else {
+                    if (name.toString().length == 0) {
+                        alert("please enter pickup name");
+                        return false;
+                    }
+                    else {
+                        if (phone.toString().length == 0) {
+                            alert("please enter phone number");
+                            return false;
+                        }
+                        else {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
     </script>
 }
