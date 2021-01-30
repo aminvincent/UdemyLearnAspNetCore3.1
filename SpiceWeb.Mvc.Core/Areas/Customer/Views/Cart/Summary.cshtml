@@ -160,10 +160,10 @@
         $(function () {
 
             var minDt = 0;
-            if (getTimeFromCurrentDate() >= 20.00) {
+            if (getTimeFromCurrentDate() >= "20.00") {
                 minDt = 1;
             }
-
+            
             $("#datepicker").datepicker({ minDate: minDt, maxDate: "+1W" }); /*set date picker only one week*/
 
             $("#timepicker").timepicker({ 'minTime': '11:00 AM', 'maxTime': '9:00 PM', step: '30' });

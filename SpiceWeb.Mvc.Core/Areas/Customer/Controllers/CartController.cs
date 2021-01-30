@@ -130,7 +130,8 @@ namespace SpiceWeb.Mvc.Core.Areas.Customer.Controllers
             detailCart.OrderHeader.OrderDate = DateTime.Now;
             detailCart.OrderHeader.UserId = claim.Value;
             detailCart.OrderHeader.Status = SD.PaymentStatusPending;
-            detailCart.OrderHeader.PickupTime = Convert.ToDateTime(detailCart.OrderHeader.PickupDate.ToShortDateString() + " " + detailCart.OrderHeader.PickupTime.ToShortTimeString());
+            //detailCart.OrderHeader.PickupTime = Convert.ToDateTime(detailCart.OrderHeader.PickupDate.ToShortDateString() + " " + detailCart.OrderHeader.PickupTime.ToShortTimeString());
+            detailCart.OrderHeader.PickupTime = detailCart.OrderHeader.PickupTime;
 
             List<OrderDetails> orderDetailList = new List<OrderDetails>();
             _db.OrderHeader.Add(detailCart.OrderHeader);
