@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SpiceWeb.Mvc.Core.Data;
@@ -179,7 +180,7 @@ namespace SpiceWeb.Mvc.Core.Areas.Customer.Controllers
             //stripe(online payment) request token => untuk melakukan request pada Stripe Server
             var options = new ChargeCreateOptions
             {
-                Amount = Convert.ToInt32(detailCart.OrderHeader.OrderTotal*100),
+                Amount = Convert.ToInt32(detailCart.OrderHeader.OrderTotal * 100),
                 Currency = "usd",
                 Description = "Order ID : " + detailCart.OrderHeader.Id,
                 Source = stripeToken
@@ -207,8 +208,11 @@ namespace SpiceWeb.Mvc.Core.Areas.Customer.Controllers
             //--STRIPE END --//
 
             await _db.SaveChangesAsync();
-            return RedirectToAction("Index", "Home");
-            //return RedirectToAction("Confirm", "Order", new { id = detailCart.OrderHeader.Id });
+
+            //return RedirectToAction("Index", "Home");
+
+            //redirect langsung ke OrderController dan ke method Confirm
+            return RedirectToAction("Confirm", "Order", new { Id = detailCart.OrderHeader.Id });
         }
 
         public IActionResult AddCoupon()
