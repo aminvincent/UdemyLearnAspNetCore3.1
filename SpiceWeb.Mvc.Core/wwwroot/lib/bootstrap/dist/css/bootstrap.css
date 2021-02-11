@@ -6134,6 +6134,7 @@ a.close.disabled {
 @media (min-width: 576px) {
     .modal-dialog {
         max-width: 500px;
+        /*max-width: 70%;*/ /*diubah agar modal dialog 70% dari layar (dalam tutorial udemy) -> kita bisa menggunakan modal-lg atau modal-sm*/
         margin: 1.75rem auto;
     }
 

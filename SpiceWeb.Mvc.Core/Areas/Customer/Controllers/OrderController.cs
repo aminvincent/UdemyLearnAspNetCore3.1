@@ -41,7 +41,7 @@ namespace SpiceWeb.Mvc.Core.Areas.Customer.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> OrderHistory(int cartId)
+        public async Task<IActionResult> OrderHistory()
         {
             var claimIdentity = (ClaimsIdentity)User.Identity;
             var claim = claimIdentity.FindFirst(ClaimTypes.NameIdentifier);
@@ -61,6 +61,18 @@ namespace SpiceWeb.Mvc.Core.Areas.Customer.Controllers
             }
 
             return View(orderList);
+        }
+
+        public async Task<IActionResult> GetOrderDetails(int Id)
+        {
+            OrderDetailsViewModel orderDetailsViewModel = new OrderDetailsViewModel()
+            {
+                OrderHeader = await _db.OrderHeader.FirstOrDefaultAsync(x => x.Id == Id),
+                OrderDetails = await _db.OrderDetails.Where(x => x.OrderId == Id).ToListAsync()
+            };
+            orderDetailsViewModel.OrderHeader.ApplicationUser = await _db.ApplicationUser.FirstOrDefaultAsync(x => x.Id == orderDetailsViewModel.OrderHeader.UserId);
+
+            return PartialView("_IndividualOrderDetails", orderDetailsViewModel);
         }
     }
 }
