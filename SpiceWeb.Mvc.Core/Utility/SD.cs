@@ -29,6 +29,9 @@ namespace SpiceWeb.Mvc.Core.Utility
         public const string PaymentStatusApproved = "Approved";
         public const string PaymentStatusRejected = "Rejected";
 
+        //giving name of status image
+        //public const string 
+
         //convert raw html
         public static string ConvertToRawHtml(string source)
         {

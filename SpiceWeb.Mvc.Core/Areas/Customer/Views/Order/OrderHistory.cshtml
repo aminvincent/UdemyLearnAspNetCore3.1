@@ -1,4 +1,9 @@
-﻿@model IEnumerable<SpiceWeb.Mvc.Core.Models.ViewModels.OrderDetailsViewModel>
+﻿@*@model IEnumerable<SpiceWeb.Mvc.Core.Models.ViewModels.OrderDetailsViewModel>*@
+
+@*menggunakan paging*@
+@model SpiceWeb.Mvc.Core.Models.ViewModels.OrderListViewModel
+
+@using SpiceWeb.Mvc.Core.Utility
 
 @{
     ViewData["Title"] = "Index";
@@ -18,33 +23,31 @@
     </div>
     <br />
     <div>
-        @if (Model.Count() > 0)
+        @if (Model.Orders.Count() > 0)
         {
             <table class="table table-striped border">
                 <tr class="table-secondary">
                     <th>
-                        @Html.DisplayNameFor(m => m.OrderHeader.Id)
+                        @Html.DisplayNameFor(m => m.Orders[0].OrderHeader.Id)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(m => m.OrderHeader.PickupName)
+                        @Html.DisplayNameFor(m => m.Orders[0].OrderHeader.PickupName)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(m => m.OrderHeader.ApplicationUser.Email)
+                        @Html.DisplayNameFor(m => m.Orders[0].OrderHeader.ApplicationUser.Email)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(m => m.OrderHeader.PickupTime)
+                        @Html.DisplayNameFor(m => m.Orders[0].OrderHeader.PickupTime)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(m => m.OrderHeader.OrderTotal)
+                        @Html.DisplayNameFor(m => m.Orders[0].OrderHeader.OrderTotal)
                     </th>
                     <th>
                         Total Items
                     </th>
-                    <th>
-
-                    </th>
+                    <th></th>
                 </tr>
-                @foreach (var item in Model)
+                @foreach (var item in Model.Orders)
                 {
                     <tr>
                         <td>
@@ -65,14 +68,28 @@
                         <td>
                             @Html.DisplayFor(m => item.OrderDetails.Count)
                         </td>
-                       <td>
-                           <button type="submit" class="btn btn-success anchorDetail" data-id="@item.OrderHeader.Id" data-toggle="modal">
-                               <i class="far fa-list-alt"></i> Details
-                           </button>
-                       </td>
+                        <td>
+                            <button type="submit" class="btn btn-success anchorDetail" data-id="@item.OrderHeader.Id" data-toggle="modal">
+                                <i class="far fa-list-alt"></i> Details
+                            </button>
+                            @*hidden status button when status is cancelled*@
+                            @if (item.OrderHeader.Status != SD.StatusCancelled)
+                            {
+                                <button type="submit" class="btn btn-info btnOrderStatus" data-id="@item.OrderHeader.Id" data-toggle="modal">
+                                    <i class="far fa-clock"></i> Status
+                                </button>
+                            }
+                        </td>
                     </tr>
                 }
             </table>
+
+            //menggunakan paging dengan custom tag helper yang telah dibuat dengan menambahkan _ViewImports.cshtml pada area
+            <div page-model="@Model.PagingInfo" page-classes-enabled="true" page-class="btn border"
+                 page-class-normal="btn btn-light" page-class-selected="btn btn-info active"
+                 class="btn-group float-lg-right">
+            </div>
+            <br />
         }
         else
         {
@@ -81,7 +98,7 @@
     </div>
 </div>
 
-@*modal untuk pop up*@
+@*modal untuk pop up Detail*@
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog-centered modal-dialog modal-lg" role="document">
         <div class="modal-content">
@@ -98,10 +115,29 @@
     </div>
 </div>
 
-@section Scripts{ 
+@*modal untuk pop up Order Status*@
+<div class="modal fade" id="myOrderStatus" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog-centered modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-light justify-content-center">
+                <h5 class="modal-title">Order Status</h5>
+            </div>
+            <div class="modal-body justify-content-center" id="myOrderStatusContent">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" style="width:20%" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
     <script>
 
         var PostBackURL = '/Customer/Order/GetOrderDetails';
+
+        var OrderStatusURL = '/Customer/Order/GetOrderStatus';
 
         $(function () {
             //calling button Details with css class
@@ -120,6 +156,30 @@
                     success: function (data) {
                         $("#myModalContent").html(data);
                         $("#myModal").modal('show');
+                    },
+                    error: function (err) {
+                        //alert("Dynamic content load failed");
+                        alert(err);
+                    }
+                })
+            })
+
+            //calling order status
+            $(".btnOrderStatus").click(function () {
+
+                var $buttonClicked = $(this);
+                var id = $buttonClicked.attr('data-id'); //get Order Header Id
+                //debugger
+                $.ajax({
+                    type: "GET",
+                    url: OrderStatusURL,
+                    contentType: "application/json; charset=utf-8",
+                    data: { "Id": id },
+                    cache: false,
+                    dataType: "html",
+                    success: function (data) {
+                        $("#myOrderStatusContent").html(data);
+                        $("#myOrderStatus").modal('show');
                     },
                     error: function (err) {
                         //alert("Dynamic content load failed");
