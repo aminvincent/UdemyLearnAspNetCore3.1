@@ -63,6 +63,26 @@
                             </li>
                         }
 
+                        @if (User.IsInRole(SD.ManagerUser) || User.IsInRole(SD.KitchenUser) || User.IsInRole(SD.FrontDeskUser))
+                        {
+                            <li class="nav-item dropdown text-white-50">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropDownMenu" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Order
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropDownMenuLink">
+                                    @if (User.IsInRole(SD.KitchenUser) || User.IsInRole(SD.ManagerUser))
+                                    {
+                                        <a class="dropdown-item" asp-action="ManageOrder" asp-controller="Order" asp-area="Customer">Manage Order</a>
+                                    }
+                                    @if (User.IsInRole(SD.FrontDeskUser) || User.IsInRole(SD.ManagerUser))
+                                    {
+                                        <a class="dropdown-item" asp-action="OrderPickup" asp-controller="Order" asp-area="Customer">Order Pickup</a>
+                                    }
+
+                                </div>
+                            </li>
+                        }
+
                         @* check session untk ditampilka di shooping cart count *@
                         @if (HttpContextAccessor.HttpContext.Session.GetInt32(@SD.ssShoppingCartCount) != null)
                         {
@@ -86,11 +106,11 @@
 
 
                         @*<li class="nav-item">
-            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </li>*@
+                                <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            </li>*@
                     </ul>
                 </div>
             </div>
