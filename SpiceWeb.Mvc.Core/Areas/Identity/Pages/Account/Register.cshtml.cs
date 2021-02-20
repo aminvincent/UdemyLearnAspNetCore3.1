@@ -31,7 +31,8 @@ namespace SpiceWeb.Mvc.Core.Areas.Identity.Pages.Account
             UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender, RoleManager<IdentityRole> roleManager)
+            IEmailSender emailSender, 
+            RoleManager<IdentityRole> roleManager) //added role manager depedency injection
         {
             _userManager = userManager;
             _signInManager = signInManager;

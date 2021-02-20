@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookListRazor", "BookListRazor\BookListRazor.csproj", "{2CB59E3E-C470-485C-B065-9FAB1744274F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpiceWeb.Mvc.Core", "SpiceWeb.Mvc.Core\SpiceWeb.Mvc.Core.csproj", "{E582848B-5FD3-4EB9-A72E-9C138091718F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpiceWeb.Mvc.Core", "SpiceWeb.Mvc.Core\SpiceWeb.Mvc.Core.csproj", "{E582848B-5FD3-4EB9-A72E-9C138091718F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

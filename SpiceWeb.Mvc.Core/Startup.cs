@@ -61,6 +61,13 @@ namespace SpiceWeb.Mvc.Core
             //original sebelum menggunakan Runtime Compilation
             //services.AddRazorPages();
 
+            //login into Facebook => for detail info https://developers.facebook.com/
+            services.AddAuthentication().AddFacebook(facebookOptions => 
+            {
+                facebookOptions.AppId = "3722014157883055";
+                facebookOptions.AppSecret = "d59d579b5c8f798bc5d9099628d6061f";
+            });
+
             //menambahkan session yang digunakan untuk menghitung jumlah shopping cart
             services.AddSession(options =>
             {
