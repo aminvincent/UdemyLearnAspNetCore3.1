@@ -46,6 +46,10 @@ namespace SpiceWeb.Mvc.Core
             //tambahkan stripe online payement agar membaca pengaturan dari appsettings.json
             services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
 
+            //tambahan untuk config send grid email
+            services.AddSingleton<IEmailSender, EmailSender>();
+            services.Configure<EmailOptions>(Configuration); //tanpa section ada di appsetting.json
+
             services.AddControllersWithViews();
 
             services.AddSingleton<IEmailSender, EmailSender>(); //menambahkan singleton pada EmailSender agar tidak error dan hanya menjadikan EmailSender menjadi 1 object

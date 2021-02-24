@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SpiceWeb.Mvc.Core.Data;
@@ -17,11 +18,14 @@ namespace SpiceWeb.Mvc.Core.Areas.Customer.Controllers
     [Area("Customer")]
     public class OrderController : Controller
     {
+        private readonly IEmailSender _emailSender;
         private readonly ApplicationDbContext _db;
         int PageSize = 2; //menampilkan 2 record di setiap page (paging)
-        public OrderController(ApplicationDbContext db)
+
+        public OrderController(ApplicationDbContext db, IEmailSender emailSender)
         {
             _db = db;
+            _emailSender = emailSender;
         }
 
         [Authorize] //login to access this method
@@ -143,6 +147,9 @@ namespace SpiceWeb.Mvc.Core.Areas.Customer.Controllers
             await _db.SaveChangesAsync();
 
             //email logic to notify user that order is ready pickup
+            //send email menggunakan send grid -> karena belum mendaptkan key send grid maka tidak bisa mengirimkan email
+            //await _emailSender.SendEmailAsync(_db.Users.Where(x => x.Id == orderHeader.UserId).FirstOrDefault().Email, "SPice - Order Ready for Pickup " + orderHeader.Id.ToString(), "Order is ready for pikcup");
+
 
             return RedirectToAction("ManageOrder", "Order"); //redirect to Manage Order
         }
@@ -153,6 +160,9 @@ namespace SpiceWeb.Mvc.Core.Areas.Customer.Controllers
             OrderHeader orderHeader = await _db.OrderHeader.FindAsync(OrderId);
             orderHeader.Status = SD.StatusCancelled;
             await _db.SaveChangesAsync();
+
+            //send email menggunakan send grid -> karena belum mendaptkan key send grid maka tidak bisa mengirimkan email
+            //await _emailSender.SendEmailAsync(_db.Users.Where(x => x.Id == orderHeader.UserId).FirstOrDefault().Email, "SPice - Order cancelled " + orderHeader.Id.ToString(), "Order Has been cancelled successfully");
 
             return RedirectToAction("ManageOrder", "Order"); //redirect to Manage Order
         }
@@ -254,6 +264,9 @@ namespace SpiceWeb.Mvc.Core.Areas.Customer.Controllers
             OrderHeader orderHeader = await _db.OrderHeader.FindAsync(OrderId);
             orderHeader.Status = SD.StatusCompleted;
             await _db.SaveChangesAsync();
+
+            //send email menggunakan send grid -> karena belum mendaptkan key send grid maka tidak bisa mengirimkan email
+            //await _emailSender.SendEmailAsync(_db.Users.Where(x => x.Id == orderHeader.UserId).FirstOrDefault().Email, "SPice - Order Completed " + orderHeader.Id.ToString(), "Order Has been completed successfully");
 
             return RedirectToAction("OrderPickup", "Order");
         }

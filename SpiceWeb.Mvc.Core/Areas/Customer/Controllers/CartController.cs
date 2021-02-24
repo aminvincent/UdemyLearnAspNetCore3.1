@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SpiceWeb.Mvc.Core.Data;
@@ -19,13 +20,15 @@ namespace SpiceWeb.Mvc.Core.Areas.Customer.Controllers
     public class CartController : Controller
     {
         private readonly ApplicationDbContext _db;
+        private readonly IEmailSender _emailSender;
 
         [BindProperty] //langsung binding data digunakan untuk menampung OrderDetailsCart agar tidak perlu menambhakan parameter input disetiap Create/Edit/Delete POST
         public OrderDetailsCart detailCart { get; set; }
 
-        public CartController(ApplicationDbContext db)
+        public CartController(ApplicationDbContext db, IEmailSender emailSender)
         {
             _db = db;
+            _emailSender = emailSender;
         }
         public async Task<IActionResult> Index()
         {
@@ -198,6 +201,9 @@ namespace SpiceWeb.Mvc.Core.Areas.Customer.Controllers
 
             if (charge.Status.ToLower() == "succeeded")
             {
+                //send email menggunakan send grid -> karena belum mendaptkan key send grid maka tidak bisa mengirimkan email
+                //await _emailSender.SendEmailAsync(_db.Users.Where(x => x.Id == claim.Value).FirstOrDefault().Email, "SPice - Order Created " + detailCart.OrderHeader.Id.ToString(), "Order Has been Submitted successfully");
+
                 detailCart.OrderHeader.PaymentStatus = SD.PaymentStatusApproved;
                 detailCart.OrderHeader.Status = SD.StatusSubmitted;
             }
