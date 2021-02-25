@@ -31,7 +31,7 @@ namespace SpiceWeb.Mvc.Core.Areas.Identity.Pages.Account
             UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender, 
+            IEmailSender emailSender,
             RoleManager<IdentityRole> roleManager) //added role manager depedency injection
         {
             _userManager = userManager;
@@ -105,8 +105,9 @@ namespace SpiceWeb.Mvc.Core.Areas.Identity.Pages.Account
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
+                    //perlu d komen karena untuk kebutuhan production ketika User Manager belum pernah dibuat
                     //add custom user role
-                    if (!await _roleManager.RoleExistsAsync(SD.CustomerEndUser))
+                    /*if (!await _roleManager.RoleExistsAsync(SD.CustomerEndUser))
                     {
                         await _roleManager.CreateAsync(new IdentityRole(SD.CustomerEndUser));
                     }
@@ -121,7 +122,9 @@ namespace SpiceWeb.Mvc.Core.Areas.Identity.Pages.Account
                     if (!await _roleManager.RoleExistsAsync(SD.KitchenUser))
                     {
                         await _roleManager.CreateAsync(new IdentityRole(SD.KitchenUser));
-                    }
+                    }*/
+
+
 
                     //using role to check which radio button rdUserRole selected value
                     if (role == SD.KitchenUser)

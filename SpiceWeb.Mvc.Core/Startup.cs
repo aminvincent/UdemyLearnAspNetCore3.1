@@ -43,6 +43,9 @@ namespace SpiceWeb.Mvc.Core
                 .AddDefaultTokenProviders() //berfungsi untuk mendapatkan token ketika user lupa password
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
+            //inisialiasi db untuk generate data user di production
+            services.AddScoped<IDbInitializer, DbInitializer>();
+
             //tambahkan stripe online payement agar membaca pengaturan dari appsettings.json
             services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
 
@@ -66,7 +69,7 @@ namespace SpiceWeb.Mvc.Core
             //services.AddRazorPages();
 
             //login into Facebook => for detail info https://developers.facebook.com/
-            services.AddAuthentication().AddFacebook(facebookOptions => 
+            services.AddAuthentication().AddFacebook(facebookOptions =>
             {
                 facebookOptions.AppId = "3722014157883055";
                 facebookOptions.AppSecret = "d59d579b5c8f798bc5d9099628d6061f";
@@ -85,7 +88,8 @@ namespace SpiceWeb.Mvc.Core
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        //public void Configure(IApplicationBuilder app, IWebHostEnvironment env) //code ori sebelum ada tmbahan dbInitializer
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IDbInitializer dbInitializer)
         {
             if (env.IsDevelopment())
             {
@@ -106,6 +110,9 @@ namespace SpiceWeb.Mvc.Core
             //menambahkan stripe setting yg sudah diatur di method ConfigureServices
             StripeConfiguration.ApiKey = Configuration.GetSection("Stripe")["SecretKey"];
             //DotNET Core 2.2 StripeConfiguration.SetApiKey(Configuration.GetSection("Stripe")["SecretKey"]);
+
+            //tambahan untuk inisialisasi database pertama kali dijalankan untuk production
+            dbInitializer.Initialize();
 
             app.UseSession(); //tambahakn ini agar session yg sudah di tambahkan di ConfigureServices bisa berfungsi
 
